@@ -1,7 +1,7 @@
 ---
 name: "Epic"
 description: "Capture a high-level initiative or large capability that spans multiple features"
-title: "<short summary>"
+title: "[Epic]: <short summary>"
 labels: 
   - "triage"
 
@@ -15,7 +15,7 @@ body:
         Use this template to define a **high-level initiative** that may span multiple ERP modules, features, or business processes.  
         An Epic should provide enough context to plan, estimate, and track progress of all associated Features and Stories.
 
-        If you dont know how to complete a field, leave it blank with a short note so a developer has the understnding
+        tip: If you dont know how to complete a field, leave it blank with a short note so a developer has the understnding
         if the reason/issue with completing the field.
 
   - type: input
@@ -128,7 +128,7 @@ body:
         **This should be a task list.**  
         Each feature or story that is part of this epic should be added as a checklist item.  
         - Use `- [ ]` followed by the issue link or short description.  
-        - This makes it clear which features are sub-tickets of the epic and allows adding as a sub-ticket.  
+        tip: This makes it clear which features are sub-tickets of the epic and allows adding as a sub-ticket.  
       placeholder: |
         - [ ] #123 - Multi-currency Accounts Payable
         - [ ] #124 - Multi-currency Accounts Receivable
