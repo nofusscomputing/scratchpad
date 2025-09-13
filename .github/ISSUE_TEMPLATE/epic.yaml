@@ -1,9 +1,10 @@
 ---
 name: "Epic"
 description: "Capture a high-level initiative or large capability that spans multiple features"
-title: "[Epic]: <short summary>"
+title: "<short summary>"
 labels: 
   - "triage"
+
 
 body:
   - type: markdown
@@ -16,16 +17,6 @@ body:
 
         If you dont know how to complete a field, leave it blank with a short note so a developer has the understnding
         if the reason/issue with completing the field.
-
-
-  - type: dropdown
-    id: issue_type
-    attributes:
-      label: Issue Type
-      description: Select the ticket type
-      options:
-        - epic
-        - feature
 
   - type: input
     id: summary
@@ -45,7 +36,7 @@ body:
         - What processes, modules, or workflows are impacted?  
       placeholder: "Detailed explanation including business context and scope."
 
-  - type: input
+  - type: textarea
     id: erp_modules
     attributes:
       label: "ERP Modules Impacted"
