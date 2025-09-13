@@ -1,7 +1,7 @@
 ---
 name: "Epic"
 description: "Capture a high-level initiative or large capability that spans multiple features"
-title: "[Epic]: <short summary>"
+title: ""
 labels: 
   - "triage"
 
@@ -24,6 +24,8 @@ body:
       label: "Summary"
       description: "One-sentence overview of the epic."
       placeholder: "e.g., Implement Global Multi-Currency Support across Accounting and Procurement"
+    validations:
+      required: true
 
   - type: textarea
     id: description
@@ -35,6 +37,8 @@ body:
         - Why is it needed now?  
         - What processes, modules, or workflows are impacted?  
       placeholder: "Detailed explanation including business context and scope."
+    validations:
+      required: true
 
   - type: textarea
     id: erp_modules
@@ -56,6 +60,8 @@ body:
         - Efficiency gains, compliance, revenue, risk reduction  
         - Key performance indicators (KPIs)  
       placeholder: "Enable accurate multi-currency reporting, reduce manual reconciliation, ensure SOX compliance"
+    validations:
+      required: true
 
   - type: textarea
     id: success_criteria
@@ -118,12 +124,14 @@ body:
       label: "Linked Features / Stories (Task List)"
       description: |
         **This should be a task list,** _as it makes it clear which features are sub-tickets of the epic and allows adding as a sub-ticket._
-        Each feature or story that is part of this epic should be added as a checklist item.  
+        List each feature or story that is part of this epic should be added as a checklist item.
         - Use `- [ ]` followed by a short description.
       placeholder: |
-        - [ ] #123 - Multi-currency Accounts Payable
-        - [ ] #124 - Multi-currency Accounts Receivable
-        - [ ] #125 - Multi-currency General Ledger
+        - [ ] #123
+        - [ ] Multi-currency Accounts Receivable
+        - [ ] Multi-currency General Ledger
+    validations:
+      required: true
 
   - type: textarea
     id: additional_notes
