@@ -4,7 +4,6 @@ description: "Capture a high-level initiative or large capability that spans mul
 title: "[Epic]: <short summary>"
 labels: 
   - "triage"
-type: epic
 
 body:
   - type: markdown
