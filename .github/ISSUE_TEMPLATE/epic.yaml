@@ -19,7 +19,7 @@ body:
 
 
   - type: dropdown
-    id: type
+    id: issue_type
     attributes:
       label: Issue Type
       description: Select the ticket type
