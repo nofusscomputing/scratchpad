@@ -117,10 +117,9 @@ body:
     attributes:
       label: "Linked Features / Stories (Task List)"
       description: |
-        **This should be a task list.**  
+        **This should be a task list,** _as it makes it clear which features are sub-tickets of the epic and allows adding as a sub-ticket._
         Each feature or story that is part of this epic should be added as a checklist item.  
-        - Use `- [ ]` followed by the issue link or short description.  
-        tip: This makes it clear which features are sub-tickets of the epic and allows adding as a sub-ticket.  
+        - Use `- [ ]` followed by a short description.
       placeholder: |
         - [ ] #123 - Multi-currency Accounts Payable
         - [ ] #124 - Multi-currency Accounts Receivable
