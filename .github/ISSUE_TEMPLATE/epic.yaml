@@ -66,14 +66,6 @@ body:
         Should be measurable and observable:  
         - Business metrics  
         - User adoption  
-          - type: dropdown
-            id: issue_type
-            attributes:
-              label: "Issue Type"
-              description: "Select the type of this issue."
-              options:
-                - Epic
-                - Feature
         - Compliance milestones  
       placeholder: "- 100% of invoices posted correctly in multiple currencies\n- Finance team adoption > 90%\n- Regulatory compliance validated in audit"
 
