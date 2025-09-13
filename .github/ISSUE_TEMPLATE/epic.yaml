@@ -50,6 +50,8 @@ body:
         - Accounting → General Ledger, Accounts Payable  
         - Procurement → Purchase Orders, Vendor Management  
       placeholder: "e.g., Accounting → AP/AR, Procurement → Vendor Management"
+    validations:
+      required: true
 
   - type: textarea
     id: business_value
@@ -108,7 +110,11 @@ body:
       label: "Stakeholders / Roles"
       description: |
         List all key stakeholders involved: business owners, module leads, IT/Dev teams, auditors, etc.  
-      placeholder: "CFO, Finance Ops Manager, IT Infrastructure Lead, Compliance Officer"
+      placeholder: |
+        - CFO
+        - Finance Ops Manager
+        - IT Infrastructure Lead
+        - Compliance Officer"
 
   - type: textarea
     id: milestones
@@ -138,4 +144,4 @@ body:
     attributes:
       label: "Additional Notes / References"
       description: "Any extra context, links to regulatory documents, architecture diagrams, or mockups."
-      placeholder: "Link to ERD diagram, regulatory compliance documents, mockups"
+      placeholder: "Link to ERD diagram, regulatory compliance documents, mockups. other notes."
