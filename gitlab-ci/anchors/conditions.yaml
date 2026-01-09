@@ -1,0 +1,70 @@
+---
+
+.condition_dev_branch_push: &condition_dev_branch_push # condition_dev_branch_push
+  $CI_COMMIT_BRANCH == "development" && 
+  $CI_PIPELINE_SOURCE == "push"
+
+.condition_master_branch_push: &condition_master_branch_push # condition_master_branch_push
+  $CI_COMMIT_BRANCH == "master" && 
+  $CI_PIPELINE_SOURCE == "push"
+
+.condition_not_master_or_dev_push: &condition_not_master_and_dev_push # condition_not_master_or_dev_push
+  $CI_COMMIT_BRANCH != "master" && 
+  $CI_COMMIT_BRANCH != "development" && 
+  $CI_PIPELINE_SOURCE == "push"
+
+.condition_master_or_dev_push: &condition_master_or_dev_push # condition_master_or_dev_push
+  (
+    $CI_COMMIT_BRANCH == "master" || 
+    $CI_COMMIT_BRANCH == "development" 
+  )&& 
+  $CI_PIPELINE_SOURCE == "push"
+
+.condition_git_tag: &condition_git_tag # condition_git_tag
+  $CI_COMMIT_TAG != null &&
+  $CI_COMMIT_BRANCH == null
+
+.condition_any_branch_push: &condition_any_branch_push # condition_any_branch_push
+  $CI_COMMIT_BRANCH != null && 
+  $CI_COMMIT_TAG == null &&
+  $CI_PIPELINE_SOURCE == "push"
+
+
+
+
+
+
+
+
+.rules_commit_develop_branch: &when_commit_develop_branch
+  - if: # on dev branch
+      $CI_COMMIT_BRANCH == "development" && 
+      $CI_PIPELINE_SOURCE == "push"
+    changes:
+      paths:
+        <<: *repository_change_files
+      compare_to: 'master'
+    exists:
+        <<: *repository_exists_files
+    when: always
+
+  - if: # not on master or dev
+      $CI_COMMIT_BRANCH != "master" && 
+      $CI_COMMIT_BRANCH != "development" && 
+      $CI_PIPELINE_SOURCE == "push"
+    changes:
+      paths:
+        <<: *repository_change_files
+      compare_to: 'development'
+    exists:
+      - dockerfile
+      - dockerfile.j2
+    when: always
+  
+  - if: # tagged pipeline
+      $CI_COMMIT_TAG != null &&
+      $CI_COMMIT_BRANCH == null
+    exists:
+      - dockerfile
+      - dockerfile.j2
+    when: on_success

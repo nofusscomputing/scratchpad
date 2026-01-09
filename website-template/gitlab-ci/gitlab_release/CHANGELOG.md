@@ -1,0 +1,60 @@
+# Changelog
+
+2023-05-28 10:31:26 +0930 [bade89c](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/bade89c5333ca853844e224f46a2d3dafab7179d) - fix(scheduled_pipelines): if scheduled pipeline only run schedualable jobs  
+2023-05-24 04:40:52 +0000 [0a17fe1](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/0a17fe1aa320c658c05d7a693ff76af4a54e6130) - build(version): bump version 0.6.1rc1 → 0.6.1rc2  
+2023-05-21 01:48:53 +0930 [088c9fb](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/088c9fb04c80961f4de8d2b129955ae8cd0b9529) - feat(conventional_commits): ensure .cz.yaml exists  
+2023-05-15 10:25:48 +0930 [18a2808](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/18a280878799fe077efa0ed5b11bceedd53eb5c8) - fix(gitlab_release): allow skip on dev branch  
+2023-05-15 10:19:49 +0930 [d89941d](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/d89941df05bfed4b0ad1277e715b224d232e7949) - feat(gitlab_release): dont automagic run on dev  
+2023-05-15 00:18:38 +0000 [a3fdca8](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/a3fdca83bf7acb58d47792a66d1cd0728747361c) - build(version): bump version 0.6.1rc0 → 0.6.1rc1  
+2023-05-14 11:46:28 +0930 [e06ffef](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/e06ffef66c4a0ba1f48f109c175239560909e698) - feat(gitlab_release): run on merge to development  
+2023-05-14 11:45:24 +0930 [199ea1f](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/199ea1f23c6a3df2b40ae3d9a5668719301500d9) - feat(gitlab_release): never run on merge or git tag  
+2023-05-14 11:44:20 +0930 [a745cea](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/a745ceac5ebce458b46593311e5285f40dcba349) - fix(gitlab_release): fixed rule to match nfc_bot  
+2023-05-14 11:41:47 +0930 [1fa7fec](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/1fa7fec38a54b7ddf460b1394a7024ef161fab24) - refactor(gitlab_release): show debug before command  
+2023-05-14 11:39:53 +0930 [e76378d](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/e76378dd068e200a1198f1811efb9d3bec7878f5) - fix(gitlab_release): only run on master on_success  
+2023-05-14 09:56:35 +0930 [934a401](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/934a401a9620891b09a5fe9c9b0e50a97b43fa9b) - fix(ci): specify the commitizen version  
+2023-05-13 15:35:28 +0930 [408e4ea](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/408e4eab9e1f61004f1e38af6d1531747b7da99b) - refactor: move docs as part of restructure  
+2023-05-13 11:49:52 +0930 [8d512a9](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/8d512a9a4bd7f4895645436f057c4bab3efb864e) - feat(commit_footer_refs): ability to disable job with variable  
+2023-05-13 11:48:47 +0930 [a37acbf](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/a37acbfc7d3ea20ece7cb76e15a14858b26f8508) - feat(gitlab_release): ability to disable job with variable  
+2022-02-12 10:27:01 +0000 [9a7ae71](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/9a7ae7106e80a038b31cdc9fc172bb1f974ecb94) - refactor: set correct commit details for nfc_bot  
+2022-01-25 00:08:05 +0000 [ce1cc01](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/ce1cc017e26ff7f6cee586cc7d98e4d292275672) - build(version): bump version 0.6.0 → 0.6.1rc0  
+2022-01-24 06:33:24 +0000 [46cc1fb](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/46cc1fbb6a878e485af39e679b5184a9912c2e7f) - build(version): bump version 0.5.0 → 0.6.0  
+2022-01-16 00:09:42 +0000 [1ef6c41](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/1ef6c41818c40183f8019ea5cde48b4278e4d694) - build(version): bump version 0.4.0 → 0.5.0  
+2022-01-16 09:02:44 +0930 [82c6c9f](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/82c6c9f5d53594544cea9a7bc59a10ab1e9ebedd) - feat(commit_footer_refs): never run on development or master.  
+2022-01-15 03:53:53 +0000 [5c9000a](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/5c9000a74859504ed64bbefa1fd193f80a2b69c2) - build(version): bump version 0.3.1 → 0.4.0  
+2022-01-11 07:03:09 +0000 [7751fd9](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/7751fd9494f610fff0ea16bd303bfe62d0034eec) - build(version): bump version 0.3.0 → 0.3.1  
+2021-08-12 14:46:26 +0930 [2ac22c0](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/2ac22c0e914016a8944ff9b94640f3e87f409069) - fix(commit_footer): fix bug introduced in code quality commit  
+2021-08-12 14:42:16 +0930 [ccc601f](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/ccc601f641a9b07b63a160d779c5037481316e75) - style(cz_nfc): code quality on cz_nfc.py  
+2021-08-12 14:27:41 +0930 [5676c5e](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/5676c5ee376f574a8581e8c8f4810eb5a7c511ba) - style(commit_footer): code quality on setup.py  
+2021-08-12 14:26:43 +0930 [3d69e57](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/3d69e57714cd529b13ddc9c575c2dc955a350dd9) - style(commit_footer): code quality on __main__.py  
+2021-08-12 14:21:34 +0930 [c093c31](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/c093c31cbd12989f7109dbcb6fd4f029c42a3919) - style(commit_footer): code quality on commits.py  
+2021-08-12 03:32:36 +0000 [389bc08](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/389bc08d7686153fb374aa83d440c35c9b4eac90) - build(version): bump version 0.3.0rc1 → 0.3.0  
+2021-08-11 13:47:34 +0930 [def31ef](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/def31ef562c0002713401652657d59320548ee85) - style(yaml_lint): fixed yaml lint errors  
+2021-08-11 12:17:50 +0930 [63af1ef](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/63af1efb4fd92a9f8755f766728a18d8f390b805) - fix(commit_footer_refs): Use the current git branch for comparison.  
+2021-08-08 15:57:50 +0930 [dc13d4f](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/dc13d4f2841038c085dcf29dfb0b0c5d2f00f099) - docs(gitlab_release): Added user docs to fix errors from ci job 'commit footer refs'  
+2021-08-08 15:28:00 +0930 [22136f7](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/22136f7dd22b9487d362a7ed63ca1b76e52b9cc7) - feat(gitlab_release): Toggle var added to enable switching changelog references.  
+2021-08-08 15:18:11 +0930 [eb0bf4c](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/eb0bf4c1740dbd7a47ceb031c0d1c854899a1e40) - refactor(gitlab_release): file link to be in local repository for helping fix commit footer ref check failures  
+2021-08-08 15:05:35 +0930 [8177622](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/81776223c5cb392c12c7ca63488a1df10290e9d1) - refactor(gitlab_release): use a name for failed test to denote the issue  
+2021-08-08 15:03:12 +0930 [756b940](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/756b9406dde8cf0bf0030ac72855a054ece3a883) - feat(gitlab_release): be able to toggle commit footer check job  
+2021-08-08 14:51:57 +0930 [7cb676e](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/7cb676eb98a7de30d47a6b49a87067116684cfd2) - ci(gitlab_release): Add a validation job to check if commit messages contain a gitlab reference in the footer  
+2021-08-08 14:50:34 +0930 [11e1566](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/11e156619d0d820e534897bafd5f39e6f9defcbf) - feat(gitlab_release): python module to check if a commit message has gitlab references in the footer  
+2021-08-07 17:11:17 +0930 [8699c41](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/8699c41219d70e6f41f42dc7f2c1bcf542b3f723) - feat(gitlab_release): Add commit footer to changelog  
+2021-08-07 14:56:51 +0930 [5f273ce](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/5f273ce23a331eaf11623207ec4aba8b856c14f0) - docs(gitlab_release): Updated docs with new instructions on version incrementing  
+2021-08-07 14:31:19 +0930 [f76cabe](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/f76cabeeb04b028a231dc1c232862db5fcad4345) - fix(gitlab_release): Adjust release workflow  
+2021-08-04 03:23:08 +0000 [eb5cc8a](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/eb5cc8a0e2885a9ed16a8d1a81611aec4d5a4d31) - build(version): bump version 0.3.0rc0 → 0.3.0rc1  
+2021-08-04 03:13:54 +0000 [09dcb65](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/09dcb65b090f59e9f8a6bea5eba4bb98bddbad3d) - build(version): bump version 0.2.1 → 0.3.0rc0  
+2021-08-04 12:39:01 +0930 [3e8c3ce](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/3e8c3ce7cd64a6e9110818d32c15c3602fefb76c) - feat(gitlab_release): On the development brnach, releases to be 'rc' to denote considered non-stable  
+2021-08-04 12:24:02 +0930 [cc3fabd](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/cc3fabdaa28f97c3e1600e4a0d95a05bb547e772) - refactor(gitlab_release): Use Short commit SHA1 in main changelog link to gitlab  
+2021-08-04 02:49:45 +0000 [4453b43](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/4453b433c8966a334f02af592a6ce8092f2ac9de) - build(version): bump version 0.2.0 → 0.2.1  
+2021-08-04 12:05:01 +0930 [588698d](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/588698df2668853a97fe60901ab324310f34f279) - fix(gitlab_release): Correctly fetch the CI_PROJECT_URL for the environment  
+2021-08-04 02:24:12 +0000 [856f2e1](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/856f2e1770d0bda823996122ee70916dc0fe455b) - build(version): bump version 0.1.0 → 0.2.0  
+2021-08-04 11:50:41 +0930 [287b4c9](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/287b4c954dddfaaf0a66af387676ea438cc80e61) - feat(gitlab_release): Include code refactor as part of the changelog  
+2021-08-04 11:48:28 +0930 [eebe8e3](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/eebe8e30dcb11cd239f35fcb98216b2ae4d20ece) - docs(gitlab_release): Include custom command instructions  
+2021-08-04 11:29:22 +0930 [7a69685](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/7a69685b53cbe5bd7341a176bf63fd17d36bc7f0) - refactor(gitlab_release): Dont conduct any release, git push or tag delete if the version was not bumped  
+2021-08-04 11:16:44 +0930 [72e8b6c](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/72e8b6c84defdb903c5741e3469651987769713f) - refactor(gitlab_release): build gitlab commit url for changelog so that there is a weblink to the changes  
+2021-08-04 01:33:47 +0000 [6d34977](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/6d349774269bcd7c6e406cfe72c78b99f246df7b) - build(version): bump version 0.0.1 → 0.1.0  
+2021-08-04 11:00:19 +0930 [80ca361](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/80ca3618ee56d0f2a2c012416cb6206599a4f3f6) - fix(gitlab_release): A 'feat' commit must do a MINOR bump to version  
+2021-08-04 10:46:25 +0930 [ed5be7f](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/ed5be7fd3c16e86d48e179a2cded53a38f79e1d9) - fix(gitlab_release): ci image is alpine, use '/bin/sh' and add the changlogs to git cache for commiting  
+2021-08-04 10:44:57 +0930 [2035ed2](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/2035ed27af7fc1f3f5b2c42aa5874219fc5fe323) - refactor(gitlab_release): use 'git log' to get current commit hash  
+2021-08-04 10:43:25 +0930 [7706085](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/7706085b09f3cd9b7c09f7f93b182fd425f6525a) - fix(gitlab_release): All tasks run as part of script including user custom script  
+2021-08-04 10:40:46 +0930 [1446c28](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/1446c28ed2bfe2efec99bc2fc83b111717bcb2af) - fix(gitlab_release): Use a user token to access the git repo for pushing commits back  
+2021-08-03 15:48:35 +0930 [6678a3d](https://gitlab.com/nofusscomputing/projects/gitlab-ci/-/commit/6678a3dbab2763addc185e766cbaffbc074a6e98) - feat(git_release): Migrated from ansible-roles  

@@ -1,0 +1,93 @@
+---
+
+include:
+  - project: nofusscomputing/projects/gitlab-ci
+    ref: development
+    file:
+      - .gitlab-ci_common.yaml
+      - template/automagic.gitlab-ci.yaml
+
+
+variables:
+    MY_PROJECT_ID: "38927651"
+
+
+Ansible_playbooks.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/ansible_playbooks
+
+
+Ansible-roles.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/ansible-roles
+
+
+common.ansible_role.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/common
+
+
+Docker_Mail.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/docker-mail
+
+
+docker-buildx-qemu.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/docker-buildx-qemu
+
+
+execution_environment.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/execution_environment
+
+
+git_configuration.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/git_configuration
+
+
+gitlab-ci.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/gitlab-ci
+
+
+firewall.ansible_role.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/firewall
+
+
+kubernetes.ansible_role.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/kubernetes
+
+
+Ops.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/ops
+
+
+Website.Submodule.Deploy:
+  extends: .submodule_update_trigger
+  variables:
+    SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/infrastructure/website
+
+
+Documentation.Lint:
+  rules:
+    - when: never
+
+Documentation.Build:
+  rules:
+    - when: never

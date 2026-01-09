@@ -1,0 +1,123 @@
+site_name: No Fuss Computing
+site_description: "Here at No Fuss Computing we predominately do research and development into, making your computing experience a more enjoyable one."
+site_url: https://nofusscomputing.com
+
+site_author: No Fuss Computing
+copyright: Copyright &copy; No Fuss Computing 2021
+
+#site_favicon: favicon.ico
+
+docs_dir: 'pages'
+site_dir: build
+
+
+theme: 
+  name: material
+  logo: assets/logo.png
+  custom_dir: website-template/theme-overrides
+  icon:
+    repo: fontawesome/brands/gitlab # (1)!
+  locale: en
+  font: false
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - search.highlight
+    - toc.integrate
+    - navigation.top
+    - header.autohide
+    - navigation.sections
+    - content.code.annotate
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.css
+
+
+plugins:
+  nfc_tags:
+    filename: tags.md
+    folder: pages
+    css_name: ".tags"
+  search:
+    lang: en
+
+  git-revision-date-localized:
+    type: iso_date
+    enable_creation_date: true
+    exclude:
+      - index.md
+      - tags.md
+  # minify:
+  #   minify_html: true
+
+
+
+extra:
+  homepage: https://nofusscomputing.com
+  version: 1.0
+  social:
+    - link: https://hub.docker.com/u/nofusscomputing
+      name: DockerHub
+      icon: fontawesome/brands/docker
+ 
+    - link: https://facebook.com/NoFussComputing
+      name: Facebook
+      icon: fontawesome/brands/facebook
+
+    - link: https://gitlab.com/nofusscomputing
+      name: Gitlab
+      icon: fontawesome/brands/gitlab
+      
+    - link: https://github.com/NoFussComputing
+      name: Github
+      icon: fontawesome/brands/github
+  blog:
+    dir: articles
+    author: jon_nfc
+    author_image: https://gitlab.com/uploads/-/system/user/avatar/4125177/avatar.png
+    words_read_per_minute: 300
+    list_length: 25
+    extended_preview: true
+
+
+markdown_extensions:
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - meta
+  - attr_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  # - pymdownx.emoji:
+  #     emoji_index: !!python/name:material.extensions.emoji.twemoji 
+  #     emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  #     options:
+  #       custom_icons:
+  #         - .icons

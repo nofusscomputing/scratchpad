@@ -1,0 +1,17 @@
+
+# Log files
+*.log
+
+# Python environments
+env/
+dev_env/
+
+# ignore junit reports
+*.junit.xml
+
+# ignore gitlab-ci artifacts
+artifacts/
+
+
+__pycache__
+*.egg-info

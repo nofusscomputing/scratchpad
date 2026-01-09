@@ -1,0 +1,149 @@
+
+stages:
+  - chores
+  - validation
+  - build
+  - prepare
+  - test
+  - release
+  - sync
+  - deploy
+  - publish
+
+include:
+  - local: $JOB_ROOT_DIR/lint/yaml.gitlab-ci.yaml
+  - local: $JOB_ROOT_DIR/template/automagic.gitlab-ci.yaml
+
+  - local: $JOB_ROOT_DIR/conventional_commits/.gitlab-ci.yml
+  - local: $JOB_ROOT_DIR/git_push_mirror/.gitlab-ci.yml
+  - local: $JOB_ROOT_DIR/gitlab_release/.gitlab-ci.yml
+  - local: $JOB_ROOT_DIR/lint/markdown.gitlab-ci.yaml
+  - local: $JOB_ROOT_DIR/python/.gitlab-ci.yml
+  # - local: $JOB_ROOT_DIR/test/.gitlab-ci.yml
+  - local: $JOB_ROOT_DIR/ansible/collection/ci-test.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  #- template: Security/License-Scanning.gitlab-ci.yml
+
+
+variables:
+  JOB_ROOT_DIR: '.'
+  SECURE_LOG_LEVEL: debug
+  GIT_SUBMODULE_STRATEGY: normal
+  GIT_SYNC_URL: "https://$GITHUB_USERNAME_ROBOT:$GITHUB_TOKEN_ROBOT@github.com/NoFussComputing/gitlab-ci.git"
+  MY_PROJECT_ID: "28543717"
+  LICENSE_FINDER_CLI_OPTS: '--recursive'
+  MDLINT_PATHS: "**/*.md **/**/*.md **/**/**/*.md **/**/**/**/*.md **/**/**/**/**/**/*.md #**CHANGELOG.md #CHANGELOG.md #website-template/** #.gitlab/**"
+  PAGES_ENVIRONMENT_PATH: projects/gitlab-ci/
+
+# Scanner doesn't Pickup multiple pip files. Disable and specify jobs with pip file.
+gemnasium-python-dependency_scanning:
+  rules:
+    - when: never
+
+# source: https://gitlab.com/gitlab-org/gitlab/-/blob/2f33a8cb4dcea7b875e360d4cd9e016e027d2973/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml
+.gemnasium-python-dependency_scanning:
+  extends: .ds-analyzer
+  image:
+    name: "$DS_ANALYZER_IMAGE"
+  variables:
+    # Python 3.7 not available
+#    DS_PYTHON_VERSION: "3.7"
+    # DS_ANALYZER_IMAGE is an undocumented variable used internally to allow QA to
+    # override the analyzer image with a custom value. This may be subject to change or
+    # breakage across GitLab releases.
+    DS_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/gemnasium-python:$DS_MAJOR_VERSION"
+    # Stop reporting Pipenv and Setuptools as "pip".
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/338252
+    DS_REPORT_PACKAGE_MANAGER_PIP_WHEN_PYTHON: "false"
+  # Can't find pillow 9.0, check python version. 3.6 only available, 3.7 not.
+  before_script:
+    - python --version
+    # Bug reported at gitlab-org/gitlab#350949. 
+    # workaround, delete all other pip files except the one to be scanned
+    # Delete all existing pipfiles except the one to be scanned.
+    - for found_file in $(find . -type f -name 'requirements.txt'); do if [ $found_file != "./$PIP_REQUIREMENTS_FILE" ]; then echo "[DEBUG] Removing '$found_file' due to bug reported at gitlab-org/gitlab#350949"; rm -f $found_file; fi done;
+  rules:
+    - if: $DEPENDENCY_SCANNING_DISABLED
+      when: never
+        # Support passing of $PIP_REQUIREMENTS_FILE
+        # See https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#configuring-specific-analyzers-used-by-dependency-scanning
+    - if: $CI_COMMIT_BRANCH &&
+          $GITLAB_FEATURES =~ /\bdependency_scanning\b/ &&
+          $DS_DEFAULT_ANALYZERS =~ /gemnasium-python/ &&
+          $PIP_REQUIREMENTS_FILE && 
+          ( $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "pipeline")
+
+Ansible Dependencies:
+  extends: .gemnasium-python-dependency_scanning
+  variables:
+    PIP_REQUIREMENTS_FILE: ansible/requirements.txt
+
+
+conventional_commits Dependencies:
+  extends: .gemnasium-python-dependency_scanning
+  variables:
+    PIP_REQUIREMENTS_FILE: conventional_commits/requirements.txt
+
+
+gitlab_release Dependencies:
+  extends: .gemnasium-python-dependency_scanning
+  variables:
+    PIP_REQUIREMENTS_FILE: gitlab_release/requirements.txt
+
+
+mkdocs Dependencies:
+  extends: .gemnasium-python-dependency_scanning
+  variables:
+    PIP_REQUIREMENTS_FILE: mkdocs/requirements.txt
+
+
+python Dependencies:
+  extends: .gemnasium-python-dependency_scanning
+  variables:
+    PIP_REQUIREMENTS_FILE: python/requirements.txt
+
+
+yaml_lint Dependencies:
+  extends: .gemnasium-python-dependency_scanning
+  variables:
+    PIP_REQUIREMENTS_FILE: lint/requirements.txt
+
+
+PyLint:
+  extends:
+    - .PyLint
+  image: python:3.6-slim
+
+
+gilab-ci.yml Lint (python 3.11):
+  extends:
+    - .Gitlab_CI.Lint.YAML
+  image: python:3.11-slim
+
+
+Update Sub Repo:
+  extends: .submodule_update_trigger
+  parallel:
+    matrix:
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/ops
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/infrastructure/configuration-management/itil_runbooks
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/infrastructure/website
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/ansible_playbooks
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/ansible-roles
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/ansible_docker_os
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/ansible_test
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/collections/ci-test
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/collections/firewall
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/collections/kubernetes
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/collections/phpipam_scan_agent
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/common
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/docker_management
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/execution_environment
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/git_configuration
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/homeassistant
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/ansible/nfc_glpi
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/docker-bind
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/docker-mail
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/docker-buildx-qemu
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/docker-glpi
+      - SUBMODULE_UPDATE_TRIGGER_PROJECT: nofusscomputing/projects/kubernetes_monitoring

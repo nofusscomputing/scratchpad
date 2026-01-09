@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if page.edit_url %}
+  <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-content__button md-icon">
+    {% include ".icons/material/pencil.svg" %}
+  </a>
+{% endif %}
+
+<span itemscope itemtype="https://schema.org/CreativeWork">
+  <!--{% if page.meta.type == "blog" %}
+  <span itemprop="hasPart" itemscope itemtype="https://schema.org/BlogPosting">
+  {% elif  page.meta.type == "article" %}
+  <span itemprop="hasPart" itemscope itemtype="https://schema.org/Article">    
+  {% endif %}
+  <span itemprop="hasPart" itemscope itemtype="https://schema.org/Article">-->
+
+    <h1 itemprop="name">{{ page.title }}</h1>
+    
+    <hr>
+
+    <span itemprop="text">
+      {{ page.content }}
+    </span>
+
+    <!--<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization" style="font-size: 10px;">
+      Published by: <span itemprop="name">{{ config.site_name }}</span>, <span itemprop="url">{{ config.site_url }}</span>
+    </span>
+    {% if page.meta.copyrightHolder %}
+    <br>
+    <span itemprop="copyrightHolder" itemscope itemtype="https://schema.org/Person" style="font-size: 10px;">
+      Copyright <span itemprop="name">{{ page.meta.copyrightHolder }}</span>
+    </span>
+    {% endif %}-->
+    <!--{% if page.meta.type %}</span>{% endif %}
+  </span>-->
+
+<div style="background-color: var(--md-primary-fg-color); color: var(--md-primary-bg-color); padding: 5px;">
+<h4>About:</h4>
+<p>This page is part of our Project {{ config.repo_name }}.</p>
+<p>
+  <h5>Page Metadata</h5>
+  Version: ToDo: place files short git commit here <!--<span itemprop="version"></span> --><br>
+  Date Created: <span itemprop="dateCreated">{{ page.meta.date.strftime("%Y-%m-%d") }}</span><br>
+  {% if page.meta.git_revision_date_localized %}Date Edited: <span itemprop="dateModified">{{ page.meta.git_revision_date_localized.replace("\n", "").replace("\r", "") }}</span><br>{% endif %}
+</p>
+
+<h5>Contribution:</h5>
+<p>Would You like to contribute to our {{ config.repo_name }} project? You can assist in the following ways:</p>
+<ul>
+<li><a style="color: #ffffff; font-weight: bold;" href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}">Edit This Page</a> If there is a mistake or a way you can improve it.</li>
+<li><a style="color: #ffffff; font-weight: bold;" href="{{ config.repo_url }}/-/new/development">Add a Page to the {{ manual_section }} Manual</a> if you would like to add an item to our manual</li>
+<li><a style="color: #ffffff; font-weight: bold;" target="_blank" href="{{ config.repo_url }}/-/issues/new">Raise an Issue</a> if there is something about this page you would like to improve, and git is unfamiliar to you.</li>
+</ul>
+<p>&nbsp;</p>
+<p>ToDo: Add the page list of contributors</p>
+
+</div>
+  
+</span>
+
+{% endblock %}

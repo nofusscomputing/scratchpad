@@ -1,0 +1,97 @@
+
+.yaml_lint_defaults:
+  variables:
+    YAML_LINT_PATH: "."
+    YAML_LINT_EXTRA_ARGS: "{ extends: $ROOT_DIR/lint/.yamllint.yaml, ignore: [gitlab-ci/*, website-template/*] }"
+  stage: validation
+  before_script:
+    - if [ "0$JOB_ROOT_DIR" == "0" ]; then ROOT_DIR=gitlab-ci; else ROOT_DIR=$JOB_ROOT_DIR ; fi
+    - echo "[DEBUG] ROOT_DIR[$ROOT_DIR]"
+    - mkdir -p "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME"
+    - mkdir -p "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests"
+    - export PYTHON_VERSION=`python -c 'import sys; version=sys.version_info[:3]; print("{0}.{1}.{2}".format(*version))'`
+    - apt update
+    - apt install --no-install-recommends -y git
+    - python3 -m venv env
+    - . env/bin/activate
+    - pip install --upgrade pip
+    - pip install -r $ROOT_DIR/lint/requirements.txt
+    - mkdir $PYTHON_VERSION
+  script:
+    - echo "[DEBUG] YAML_LINT_PATH[$YAML_LINT_PATH]"
+    - echo "[DEBUG] YAML_LINT_CONFIG[$YAML_LINT_CONFIG]"
+    - yamllint $YAML_LINT_PATH -f parsable -d "$(echo $YAML_LINT_EXTRA_ARGS)" > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/$PYTHON_VERSION-yaml-lint.log" 1>&1 || YAML_LINT=$?
+    - cat "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/$PYTHON_VERSION-yaml-lint.log" | ansible-lint-to-junit-xml > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests/$PYTHON_VERSION-yaml-lint.junit.xml"
+    - if [ $YAML_LINT > 0 ]; then echo "YAML lint failed with $YAML_LINT"; exit $YAML_LINT; fi
+  after_script:
+    - echo deactivate
+  artifacts:
+    expire_in: 3 days
+    when: always
+    paths:
+      - "artifacts/*"
+    reports:
+      junit:
+        - "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests/*.junit.xml"
+  rules:
+    - if: '$JOB_STOP_YAML_LINT'
+      when: never
+
+    - if: '$CI_COMMIT_BRANCH == "master" &&
+          ( $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "pipeline")'
+      when: always
+
+    - if: '$CI_COMMIT_BRANCH &&
+        ( $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "pipeline")'
+      exists:
+        - '{!gitlab-ci/**/*,!website-template/**/*,!.gitlab-ci,!*gitlab-ci*,**/*,**}.{yml,yaml}'
+        # - ".gitlab-ci*"
+        # - "**/*gitlab-ci*"
+      changes:
+        paths:
+          - '{!gitlab-ci/**/*,!website-template/**/*,!.gitlab-ci,!*gitlab-ci*,**/*,**}.{yml,yaml}'
+        compare_to: 'master'
+      when: always
+
+    - when: never
+
+
+.Gitlab_CI.Lint.YAML:
+  variables:
+    YAML_LINT_PATH: ".gitlab-ci* ./**/*gitlab-ci*"
+    YAML_LINT_EXTRA_ARGS: "{ extends: lint/.yamllint.yaml,ignore: [gitlab-ci/*,website-template/*] }"
+  extends:
+    - .yaml_lint_defaults
+  rules:
+
+    - if: # condition_master_branch_push
+        $CI_COMMIT_BRANCH == "master" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{*,**/**,**}/*gitlab-ci*'
+      when: always
+
+    - if: # condition_dev_branch_push
+        $CI_COMMIT_BRANCH == "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{*,**/**,**}/*gitlab-ci*'
+      changes:
+        paths:
+          - '{*,**/**,**}/*gitlab-ci*'
+        compare_to: 'master'
+      when: always
+
+    - if: # condition_not_master_or_dev_push
+        $CI_COMMIT_BRANCH != "master" && 
+        $CI_COMMIT_BRANCH != "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{*,**/**,**}/*gitlab-ci*'
+      changes:
+        paths:
+          - '{*,**/**,**}/*gitlab-ci*'
+        compare_to: 'development'
+      when: always
+
+    - when: never

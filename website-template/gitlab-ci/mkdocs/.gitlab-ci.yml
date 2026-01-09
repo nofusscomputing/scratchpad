@@ -1,0 +1,134 @@
+.MKDocs_Build:
+  image: python:3.11.2-bullseye
+  stage: build
+  variables:
+    GIT_DEPTH: 0
+    MKDOCS_BUILD_PATH: build
+    MKDOCS_SOURCE_PATH: docs
+    DEFAULT_ROOT_DIR: './gitlab-ci'
+  before_script:
+    - mkdir -p "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME"
+    - if [ "0$JOB_ROOT_DIR" == "0" ]; then ROOT_DIR=$DEFAULT_ROOT_DIR; else ROOT_DIR=$JOB_ROOT_DIR ; fi
+    - echo "[DEBUG] ROOT_DIR[$ROOT_DIR]"
+    - if [ ! -f "requirements.txt" ]; then pip install --upgrade pip -r $ROOT_DIR/mkdocs/requirements.txt; fi
+    - if [ -f "requirements.txt" ]; then pip install --upgrade pip -r $ROOT_DIR/mkdocs/requirements.txt; pip install -r requirements.txt; fi
+    - if [ -f "website-template/requirements.txt" ]; then pip install --upgrade pip -r $ROOT_DIR/mkdocs/requirements.txt; pip install -r website-template/requirements.txt; fi
+  script:
+    - mkdocs build --clean --strict
+    - mv "$MKDOCS_BUILD_PATH" "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/$MKDOCS_BUILD_PATH"
+    - if [ "0$MKDOCS_INCLUDE_SOURCE" != "0" ]; then cp $MKDOCS_SOURCE_PATH "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/$MKDOCS_SOURCE_PATH"; fi
+    - ls -laR "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME"
+  artifacts:
+    expire_in: 24 hrs
+    paths:
+      - "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME"
+  rules:
+
+    - if: '$JOB_STOP_MKDOCS_BUILD'
+      when: never
+
+    - if:  # condition_git_tag
+        $CI_COMMIT_TAG != null &&
+        $CI_COMMIT_BRANCH == null
+      exists:
+        - 'mkdocs.{yaml,yml}'
+      when: always
+
+    # - if:  # condition_master_branch_push
+    #     $CI_COMMIT_BRANCH == "master" && 
+    #     $CI_PIPELINE_SOURCE == "push"
+    #   exists:
+    #     - 'mkdocs.{yaml,yml}'
+    #   when: always
+
+    - if:  # condition_dev_branch_push
+        $CI_COMMIT_BRANCH == "development" && 
+        ( 
+          $CI_PIPELINE_SOURCE == "pipeline"
+            ||
+          $CI_PIPELINE_SOURCE == "push"
+            ||
+          $CI_PIPELINE_SOURCE == "schedule"
+        )
+        # See nofusscomputing/projects/gitlab-ci#34 for extra $CI_PIPELINE_SOURCE
+      exists:
+        - 'mkdocs.{yaml,yml}'
+      # No changes check # See nofusscomputing/projects/gitlab-ci#34
+      # changes:
+      #   paths:
+      #     - '{docs/**,pages/**}/*.md'
+      #   compare_to: 'master'
+      when: always
+
+    - if:  # condition_not_master_or_dev_push
+        $CI_COMMIT_BRANCH != "master" && 
+        $CI_COMMIT_BRANCH != "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - 'mkdocs.{yaml,yml}'
+      changes:
+        paths:
+          - '{docs/**,pages/**}/*.md'
+        compare_to: 'development'
+      when: always
+
+    - when: never
+
+
+.MKDocs_Build_Docs:
+  extends: .MKDocs_Build
+  variables:
+    MKDOCS_SOURCE_PATH: docs
+  rules:
+    - if: '$JOB_STOP_MKDOCS_BUILD'
+      when: never
+
+      # Build docs on tag so they can be downloaded from the tag job and are always available.
+    - if:  # condition_git_tag
+        $CI_COMMIT_TAG != null &&
+        $CI_COMMIT_BRANCH == null
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      when: always
+
+    # - if:  # condition_master_branch_push
+    #     $CI_COMMIT_BRANCH == "master" && 
+    #     $CI_PIPELINE_SOURCE == "push"
+    #   exists:
+    #     - '{docs/**,pages/**}/*.md'
+    #   when: always
+
+    - if:  # condition_dev_branch_push
+        $CI_COMMIT_BRANCH == "development" && 
+        ( 
+          $CI_PIPELINE_SOURCE == "pipeline"
+            ||
+          $CI_PIPELINE_SOURCE == "push"
+            ||
+          $CI_PIPELINE_SOURCE == "schedule"
+        )
+        # See nofusscomputing/projects/gitlab-ci#34 for extra $CI_PIPELINE_SOURCE
+      exists:
+        - 'mkdocs.{yaml,yml}'
+      # No changes check # See nofusscomputing/projects/gitlab-ci#34
+      # changes:
+      #   paths:
+      #     - '{docs/**,pages/**}/*.md'
+      #   compare_to: 'master'
+      when: always
+
+
+    - if:  # condition_not_master_or_dev_push
+        $CI_COMMIT_BRANCH != "master" && 
+        $CI_COMMIT_BRANCH != "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      changes:
+        paths:
+          - '{docs/**,pages/**}/*.md'
+        compare_to: 'development'
+      when: always
+
+    - when: never
+    

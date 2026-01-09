@@ -1,0 +1,78 @@
+
+.conventional_commit:
+  variables:
+    DEFAULT_ROOT_DIR: './gitlab-ci'
+  image: python:3.6-slim
+  stage: validation
+  before_script:
+    - mkdir -p "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME"
+    - mkdir -p "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests"
+    - if [ "0$MR_ACCESS_TOKEN" == "0" ]; then MR_ACCESS_TOKEN=$CI_JOB_TOKEN; fi
+    - echo "[DEBUG] MR_ACCESS_TOKEN[$MR_ACCESS_TOKEN]"
+    - if [ "0$JOB_ROOT_DIR" == "0" ]; then ROOT_DIR=$DEFAULT_ROOT_DIR; else ROOT_DIR=$JOB_ROOT_DIR ; fi
+    - echo "[DEBUG] ROOT_DIR[$ROOT_DIR]"
+    - if [ "0$MY_PROJECT_ID" == "0" ]; then PROJECT_ID=$CI_PROJECT_ID; else PROJECT_ID=$MY_PROJECT_ID ; fi
+    - echo "[DEBUG] PROJECT_ID[$PROJECT_ID]"
+    - export PYTHON_VERSION=`python -c 'import sys; version=sys.version_info[:3]; print("{0}.{1}.{2}".format(*version))'`
+    - apt update
+    - apt install --no-install-recommends -y git
+    - python3 -m venv env
+    - . env/bin/activate
+    - pip install --upgrade pip
+    - pip install -r $ROOT_DIR/conventional_commits/requirements.txt
+    - echo "[DEBUG] CI_PROJECT_ID[$CI_PROJECT_ID]"
+    - echo "[DEBUG] CI_COMMIT_BRANCH[$CI_COMMIT_BRANCH]"
+    - git fetch --all
+    - git checkout --track origin/$CI_COMMIT_BRANCH
+    - git show-branch -a
+    - target_branch=$(git show-branch -a | awk 'BEGIN { FS="\n\s+*" } { print $1 }' | awk '{print $2}' | grep '\[' | sed 's/.*\[origin\/\(.*\)\].*/\1/' | grep -v '\[' | grep -v $(git rev-parse --abbrev-ref HEAD) | grep -vi 'HEAD' | awk 'BEGIN{ RS = "" ; FS = "\n" }{print $1}')
+    - echo "[DEBUG] Target Branch[$target_branch]"
+    - if [ -d "gitlab-ci" ]; then ls -la gitlab-ci; fi
+    - first_sha1=$(git log origin/$target_branch..$CI_COMMIT_BRANCH --format=format:%H | tail -1)
+    - echo "[DEBUG] First Commit SHA[$first_sha1]"
+    - echo "[DEBUG] artifacts directory [$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME]"
+  after_script:
+    - ls -lR "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE"
+    - cd ..
+    - rm -Rf check
+  artifacts:
+    expire_in: 3 days
+    when: always
+    paths:
+      - "$CI_PROJECT_DIR/artifacts/*"
+    reports:
+      junit:
+        - "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests/*.junit.xml"
+  rules:
+    - if: '$JOB_STOP_CONVENTIONAL_COMMITS'
+      when: never
+
+    - if:  # condition_any_branch_push
+        $CI_COMMIT_BRANCH != null && 
+        $CI_COMMIT_TAG == null &&
+        $CI_PIPELINE_SOURCE == "push" &&
+        $CI_COMMIT_BRANCH != 'master'
+      exists:
+      - .cz.yaml
+      when: always
+
+    - when: never
+
+
+MR Title:
+  extends:
+    - .conventional_commit
+  script:
+    - MR_TITLE=$($ROOT_DIR/conventional_commits/scripts/commit.py --token "$MR_ACCESS_TOKEN" --project $PROJECT_ID --title --branch $CI_COMMIT_BRANCH)
+    - echo "[DEBUG] MR_TITLE[$MR_TITLE]"
+    - cz_exit=0 && cz check --message "$MR_TITLE" > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/cz_output.log" 2>&1 || cz_exit=$?
+    - . $ROOT_DIR/conventional_commits/scripts/cz_junit.sh > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests/$CI_JOB_NAME-cz.junit.xml"
+
+
+Commit Messages:
+  extends:
+    - .conventional_commit
+  script:
+    - if [ "$(git log $first_sha1..HEAD --format=format:%H | wc -l)" -eq 0 ]; then echo "[DEBUG] Single Commit"; cz_exit=0 && cz check -m "$(git log HEAD --format=format:%B -1)" > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/cz_output.log" 2>&1 || cz_exit=$?; fi 
+    - if [ "$(git log $first_sha1..HEAD --format=format:%H | wc -l)" -gt 0 ]; then echo "[DEBUG] Commit range";  cz_exit=0 && cz check --rev-range $first_sha1..HEAD > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/$CI_JOB_NAME/cz_output.log" 2>&1 || cz_exit=$?; fi
+    - . $ROOT_DIR/conventional_commits/scripts/cz_junit.sh > "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/tests/$CI_JOB_NAME-cz.junit.xml"

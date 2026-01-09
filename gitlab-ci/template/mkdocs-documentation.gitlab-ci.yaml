@@ -1,0 +1,63 @@
+# This gitlab-ci file is used for creating building pages directories for nofusscomputing.com.
+# by including this file, the jobs will be autocreated and only for pages jobs.
+
+include:
+  - local: $JOB_ROOT_DIR/.gitlab-ci_common.yaml
+  - local: $JOB_ROOT_DIR/mkdocs/.gitlab-ci.yml
+  - local: $JOB_ROOT_DIR/lint/markdown.gitlab-ci.yaml
+
+
+Documentation.Lint:
+  extends: .Lint_Markdown_Docs
+  needs: []
+
+
+Documentation.Build:
+  extends: .MKDocs_Build_Docs
+  needs: [ 'Documentation.Lint' ]
+  resource_group: Documentation
+
+# this name must always be called 'pages' so that gitlab pages work
+pages:
+  stage: deploy
+  resource_group: Documentation
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - mv "$CI_PROJECT_DIR/artifacts/build/Documentation.Build/build" public
+  needs: [ 'Documentation.Build' ]
+  environment: 
+    name: Gitlab Pages
+    url: $CI_PAGES_URL/$PAGES_ENVIRONMENT_PATH
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$JOB_STOP_GITLAB_PAGES'
+      when: never
+
+    - if:  # condition_dev_branch_push
+        $CI_COMMIT_BRANCH == "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      changes:
+        paths:
+          - '{docs/**,pages/**}/*.md'
+        compare_to: 'master'
+      when: always
+
+    - if:  # condition_not_master_or_dev_push
+        $CI_COMMIT_BRANCH != "master" && 
+        $CI_COMMIT_BRANCH != "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      changes:
+        paths:
+          - '{docs/**,pages/**}/*.md'
+        compare_to: 'development'
+      allow_failure: true
+      when: manual
+
+    - when: never

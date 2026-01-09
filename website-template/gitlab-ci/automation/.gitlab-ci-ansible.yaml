@@ -1,0 +1,174 @@
+---
+# This yaml is intended to run ansible jobs using nfc's ansible-ee image
+
+include:
+  - local: $JOB_ROOT_DIR/.gitlab-ci_common.yaml
+
+
+.ansible_playbook:
+  image: 
+    name: nofusscomputing/ansible-ee:dev
+    pull_policy: always
+  stage: chores
+  variables:
+    ansible_inventory: ''
+    ansible_playbook: ''
+    ansible_tags: ''
+    ANSIBLE_FORCE_COLOR: 'true'
+  script:
+    - if [ "0$ansible_inventory" != '0' ]; then ansible_inventory=-i $ansible_inventory; fi
+    - if [ "0$ansible_tags" != '0' ]; then ansible_tags=$(echo -n "--tags $ansible_tags"); fi
+    - echo "[DEBUG] ansible_inventory=$ansible_inventory"
+    - echo "[DEBUG] ansible_playbook=$ansible_playbook"
+    - echo "[DEBUG] ansible_tags=$ansible_tags"
+    - ansible-playbook $ansible_inventory $ANSIBLE_PLAYBOOK_DIR/$ansible_playbook $ansible_tags -vvv
+  rules:
+  # ToDo: at some stage redefine these rules so that the job can run if specified.
+    # - if: '$NFC_AUTO_JOBS == "false"'
+    #   when: never
+
+    # - if: '$CI_PIPELINE_SOURCE == "schedule" && $PIPELINE_RUN_SCHEDULE == "true"'
+    #   exists:
+    #     - ".nfc_automation.yaml"
+    #   when: always
+
+    # - if: 
+    #     (
+    #       $CI_PIPELINE_SOURCE == "api"
+    #         || 
+    #       $CI_PIPELINE_SOURCE == "pipeline"
+    #         || 
+    #       $CI_PIPELINE_SOURCE == "trigger" 
+    #         || 
+    #       $CI_PIPELINE_SOURCE == "parent_pipeline"
+    #     ) && 
+    #     $PIPELINE_RUN_TRIGGER == "true"
+    #   exists:
+    #     - ".nfc_automation.yaml"
+    #   when: always
+
+
+    # - if: # condition_dev_branch_push
+    #     $CI_COMMIT_BRANCH == "development" && 
+    #     $CI_PIPELINE_SOURCE == "push"
+    #   exists:
+    #     - ".nfc_automation.yaml"
+    #   when: always
+
+    # # this if for testing only
+    # # - if: '$CI_PIPELINE_SOURCE == "push"'
+    # #   when: always
+    # #   exists:
+    # #     - ".nfc_automation.yaml"
+    - when: never
+
+
+.ansible_playbook_git_submodule:
+  extends: .ansible_playbook
+  variables:
+    ansible_playbook: 'git_configuration.yaml'
+    ansible_tags: 'submodule'
+  rules:
+    - if: '$NFC_AUTO_JOBS == "false"'
+      when: never
+
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $PIPELINE_RUN_SCHEDULE == "true"'
+      exists:
+        - ".nfc_automation.yaml"
+      when: always
+
+    - if: 
+        (
+          $CI_PIPELINE_SOURCE == "api"
+            || 
+          $CI_PIPELINE_SOURCE == "pipeline"
+            || 
+          $CI_PIPELINE_SOURCE == "trigger" 
+            || 
+          $CI_PIPELINE_SOURCE == "parent_pipeline"
+        ) && 
+        $PIPELINE_RUN_TRIGGER == "true"
+      exists:
+        - ".nfc_automation.yaml"
+      when: always
+
+    - if: # condition_dev_branch_push
+        $CI_COMMIT_TAG == null &&
+        $CI_COMMIT_BRANCH == "development" && 
+        $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && 
+        $CI_PIPELINE_SOURCE != "push"
+      exists:
+        - ".nfc_automation.yaml"
+      when: always
+
+    # this if for testing only
+    # - if: '$CI_PIPELINE_SOURCE == "push"'
+    #   when: always
+    #   exists:
+    #     - ".nfc_automation.yaml"
+    - when: never
+
+
+.submodule_update_trigger:
+  stage: publish
+  # trigger:
+  #   project: $SUBMODULE_UPDATE_TRIGGER_PROJECT
+  #   branch: development
+  # inherit:
+  #   variables: false
+  script: 
+  # use script to trigger pipeline instead of trigger keyword. 
+  # this is due to trigger keyword not allowing environment keyword.
+    - export TRIGGER_PROJECT_PATH=$(python3 -c "import urllib.parse, sys; print('$SUBMODULE_UPDATE_TRIGGER_PROJECT'.replace('/', '%2F'))")
+    - echo "[DEBUG] TRIGGER_PROJECT_PATH=$TRIGGER_PROJECT_PATH"
+    - |
+      curl \
+        --request POST \
+        --form "token=$CI_JOB_TOKEN" \
+        --form ref=development \
+        --form "variables[GIT_CONFIG_SUBMODULE_NAME]=$GIT_CONFIG_SUBMODULE_NAME" \
+        --form "variables[PIPELINE_RUN_TRIGGER]=$PIPELINE_RUN_TRIGGER" \
+        --form "variables[GIT_COMMIT_TYPE]=$GIT_COMMIT_TYPE" \
+        --form "variables[GIT_COMMIT_TYPE_CATEGORY]=$GIT_COMMIT_TYPE_CATEGORY" \
+      "https://gitlab.com/api/v4/projects/$TRIGGER_PROJECT_PATH/trigger/pipeline"
+  environment: 
+    name: $SUBMODULE_UPDATE_TRIGGER_PROJECT
+    url: https://gitlab.com/$SUBMODULE_UPDATE_TRIGGER_PROJECT
+  variables:
+    PIPELINE_RUN_TRIGGER: 'true'
+    GIT_CONFIG_SUBMODULE_NAME: $CI_PROJECT_NAME
+  rules:
+    - if: # condition_master_or_dev_push
+        (
+          $CI_COMMIT_BRANCH == "master" || 
+          $CI_COMMIT_BRANCH == "development" 
+        ) && 
+        $CI_PIPELINE_SOURCE == "push" &&
+        $CI_COMMIT_TAG == null
+      when: on_success
+
+    - when: never
+
+
+.ansible_playbook_mr_from_issue_comment_patch:
+  extends: .ansible_playbook
+  variables:
+    ansible_playbook: 'git_configuration.yaml'
+    ansible_tags: 'gitlab_issue_patches'
+    PIPELINE_RUN_TRIGGER: 'false'
+    PIPELINE_RUN_SCHEDULE: 'false'
+  needs: []
+  rules:
+    - if: '$NFC_AUTO_JOBS == "false"'
+      when: never
+    - if: 
+        $CI_COMMIT_TAG == null &&
+        $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && 
+        $CI_PIPELINE_SOURCE != "push" &&
+        $CI_COMMIT_BRANCH != 'master' &&
+        $CI_COMMIT_BRANCH != 'automated-tasks' &&
+        $CI_COMMIT_BRANCH == 'development'
+      exists:
+        - ".nfc_automation.yaml"
+      when: always
+    - when: never

@@ -1,14 +1,19 @@
-# ---
-# name: 'Python'
+---
+name: 'CI'
 
 
-# on:
-#   push:
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '*'
 
-# jobs:
 
-#   collection:
-#     name: 'Ansible Collection'
-#     uses: nofusscomputing/action_ansible_collection/.github/workflows/reusable_ansible_collection.yaml@genesis
-#     # secrets:
-#     #   WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+jobs:
+
+  mkdocs:
+    name: 'MKDocs'
+    uses: nofusscomputing/action_mkdocs/.github/workflows/reusable_mkdocs.yaml@genesis
+    # secrets:
+    #   WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

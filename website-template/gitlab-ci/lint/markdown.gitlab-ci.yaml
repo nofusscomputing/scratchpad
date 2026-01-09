@@ -1,0 +1,102 @@
+.Lint_Markdown:
+  image: node:alpine3.14
+  stage: validation
+  variables:
+    MDLINT_PATHS: "**/*.md **/**/*.md **/**/**/*.md **/**/**/**/*.md **/**/**/**/**/**/*.md #CHANGELOG.md !gitlab-ci"
+    DEFAULT_ROOT_DIR: "./gitlab-ci"
+    MD_LINT_CONFIG_PATH: ""
+  before_script:
+    - mkdir -p "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/lint_markdown"
+    - if [ "0$JOB_ROOT_DIR" == "0" ]; then ROOT_DIR=$DEFAULT_ROOT_DIR; else ROOT_DIR=$JOB_ROOT_DIR; fi
+    - echo "[DEBUG] ROOT_DIR[$ROOT_DIR]"
+    - if [ "0$MD_LINT_CONFIG_PATH" != "0" ]; then cp "$MD_LINT_CONFIG_PATH/.markdownlint.json" $CI_PROJECT_DIR/.markdownlint.json; fi
+    - cp -f "$ROOT_DIR/lint/.markdownlint-cli2.jsonc" "$CI_PROJECT_DIR/.markdownlint-cli2.jsonc"
+    - npm install markdownlint-cli2 --global
+    - npm install markdownlint-cli2-formatter-junit --global
+  script:
+    - echo "[DEBUG] MDLINT_PATHS=$MDLINT_PATHS"
+    - markdownlint-cli2 $MDLINT_PATHS 1>&1 || EXITCODE=$?
+    - echo DEBUG EXITCODE[$EXITCODE]
+    - rm -f "$CI_PROJECT_DIR/.markdownlint-cli2.jsonc"
+    - if [ "0$MD_LINT_CONFIG-PATH" != "0" ]; then rm -f "$CI_PROJECT_DIR/.markdownlint.json"; fi
+    - mv *.junit.xml "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/lint_markdown/markdown_lint.junit.xml"
+  artifacts:
+    expire_in: 24 hrs
+    when: always
+    paths:
+      - "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/lint_markdown/*"
+    reports:
+      junit:
+        - "$CI_PROJECT_DIR/artifacts/$CI_JOB_STAGE/lint_markdown/*.junit.xml"
+  rules:
+    - if: '$JOB_STOP_LINT_MARKDOWN'
+      when: never
+
+    - if: # condition_any_branch_push
+        $CI_COMMIT_BRANCH != null && 
+        $CI_COMMIT_TAG == null &&
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        # - "**.md"
+        # - "**/**.md"
+        - '{!docs/**,!pages/**,!gitlab-ci/**,!website-template/**,**}/*.md'
+      when: always
+    - when: never
+
+
+.Lint_Markdown_Docs:
+  variables:
+    MDLINT_PATHS: "docs/*.md docs/**/*.md docs/**/**/*.md docs/**/**/**/*.md docs/**/**/**/**/**/*.md #CHANGELOG.md !gitlab-ci !website-template"
+    MD_LINT_CONFIG_PATH: "$CI_PROJECT_DIR/website-template"
+  extends: .Lint_Markdown
+  rules:
+    - if: '$JOB_STOP_LINT_MARKDOWN_DOCS'
+      when: never
+
+    - if:  # condition_git_tag
+        $CI_COMMIT_TAG != null &&
+        $CI_COMMIT_BRANCH == null
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      when: always
+
+    - if:  # condition_master_branch_push
+        $CI_COMMIT_BRANCH == "master" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      when: always
+
+    - if:  # condition_dev_branch_push
+        $CI_COMMIT_BRANCH == "development" &&
+        (
+          $CI_PIPELINE_SOURCE == "pipeline"
+            ||
+          $CI_PIPELINE_SOURCE == "push"
+            ||
+          $CI_PIPELINE_SOURCE == "schedule"
+        )
+      # See nofusscomputing/projects/gitlab-ci#34 for extra $CI_PIPELINE_SOURCE
+      exists:
+        - '{docs/**,pages/**}/*.md'
+      # No changes check # See nofusscomputing/projects/gitlab-ci#34
+      # changes:
+      #   paths:
+      #     - '{docs/**,pages/**}/*.md'
+      #   compare_to: 'master'
+      when: always
+
+    - if:  # condition_not_master_or_dev_push
+        $CI_COMMIT_BRANCH != "master" && 
+        $CI_COMMIT_BRANCH != "development" && 
+        $CI_PIPELINE_SOURCE == "push"
+      exists:
+        - '{docs/**,pages/**}/*.md' # works
+      changes:
+        paths:
+          #- '{docs/*,pages/*}*.md'
+          - '{docs/**,pages/**}/*.md'
+        compare_to: 'development'
+      when: always
+
+    - when: never
